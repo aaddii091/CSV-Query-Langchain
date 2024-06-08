@@ -52,3 +52,12 @@ The RecursiveCharacterTextSplitter splits the normalized document text into chun
 ### Install Dependencies
 ```sh
 npm install
+```
+
+### Run Application
+```sh
+npm run dev
+```
+
+### Dummy CSV Data File
+[Download Top 1000 Twitch Streamers Data](https://www.kaggle.com/datasets/hibrahimag1/top-1000-twitch-streamers-data-may-2024/download?datasetVersionNumber=2)
