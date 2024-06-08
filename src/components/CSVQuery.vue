@@ -18,13 +18,31 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
+import Swal from "sweetalert2";
 
 // Define state variables
 const loading = ref(false);
 const result = ref(null);
+const query = ref("");
 
 // Handle file upload
 const handleFileUpload = async (event) => {
+  await Swal.fire({
+    title: "Enter your query",
+    input: "text",
+    inputAttributes: {
+      autocapitalize: "off",
+    },
+    showCancelButton: true,
+    confirmButtonText: "Start",
+    showLoaderOnConfirm: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      let userQuery = result.value;
+      query.value = userQuery;
+    }
+  });
+  console.log(query.value);
   const file = event.target.files[0];
   if (file && file.name.endsWith(".csv")) {
     loading.value = true;
@@ -33,6 +51,7 @@ const handleFileUpload = async (event) => {
       // // Convert file to text
       // const text = await file.text();
       // console.log(text);
+
       // Process CSV
       const loader = new CSVLoader(file);
       const docs = await loader.load();
@@ -53,7 +72,7 @@ const handleFileUpload = async (event) => {
           apiKey: import.meta.env.VITE_OPENAI_API_KEY,
         })
       );
-
+      console.log(vectorStore, "chal ja bhai");
       // Initialize OpenAI model and create retrieval chain
       const model = new ChatOpenAI({
         apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -62,7 +81,7 @@ const handleFileUpload = async (event) => {
 
       // Query the retrieval chain
       const question = "read the document and name top 3 horror movies";
-      const res = await chain.invoke({ query: question });
+      const res = await chain.invoke({ query: query.value });
       result.value = res.text;
     } catch (error) {
       console.error("Error processing the file:", error);
